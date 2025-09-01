@@ -1,8 +1,6 @@
-"""Performs unit tests."""
+"""Function to perform unit tests with pytest"""
 
-import pytest
 from random import randint
-
 from utils import hamm
 
 def test_hamm():
