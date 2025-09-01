@@ -1,17 +1,15 @@
-from utils import hamm
+"""Performs unit tests."""
+
+import pytest
 from random import randint
 
-if __name__ == "__main__":
-    msg = [0 for i in range(16)]
+from utils import hamm
 
-    res1 = hamm(msg)
-    print(f"This is the original message: {msg}")
-    print(f"Error detected in position: {res1}")
+def test_hamm():
+    msg = [0 for i in range(512)]
 
-    n = randint(0, 15)
+    n = randint(0, 511)
     msg[n] = int(not msg[n])
     res2 = hamm(msg)
-    print(f"Oh no!!! The message has been altered, but where? {msg}")
-    print(f"Error detected in position: {res2}")
-
-    print("Oh... Thanks Hamming")
+    
+    assert res2 == n
