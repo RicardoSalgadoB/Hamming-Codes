@@ -10,17 +10,17 @@ class Z2:
 
     def __radd__(self, other):
         if isinstance(other, Z2):
-            return Z2(self.n ^ other.n)
+            return other + self
         return Z2(self.n + other)
 
     def __mul__(self, other):
         if isinstance(other, Z2):
-            return Z2(self.n and other.n)
+            return Z2(self.n & other.n)
         return Z2(self.n * other)
 
     def __rmul__(self, other):
         if isinstance(other, Z2):
-            return Z2(self.n and other.n)
+            return Z2(self.n & other.n)
         return Z2(self.n * other)
 
     def __neg__(self):

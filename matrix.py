@@ -3,24 +3,24 @@ class Matrix:
         for i in range(1, len(vals)):
             if len(vals[i-1]) != len(vals[i]):
                 raise "Matrix shape must be consistent"
-        self.vals = [[]]
+        self.data = [[]]
         if isinstance(vals, list) and isinstance(vals[0], list):
-            self.vals = vals
+            self.data = vals
         else:
             raise "Matrix over Z2"
-        self.h = len(self.vals)
-        self.w = len(self.vals[0])
+        self.h = len(self.data)
+        self.w = len(self.data[0])
 
     def __add__(self, other):
         if self.h != other.h or self.w != other.w:
             raise "Matrices mut have same shape"
-        new = [[l+r for l,r in zip(self.vals[row_i], other.vals[row_i])] for row_i in range(self.h)]
+        new = [[l+r for l,r in zip(self.data[row_i], other.data[row_i])] for row_i in range(self.h)]
         return Matrix(new)
 
     def __radd__(self, other):
         if self.h != other.h or self.w != other.w:
             raise "Matrices mut have same shape"
-        new = [[l+r for l,r in zip(other.vals[row_i], self.vals[row_i])] for row_i in range(self.h)]
+        new = [[l+r for l,r in zip(other.data[row_i], self.data[row_i])] for row_i in range(self.h)]
         return Matrix(new)
 
     def __rmul__(self, other):
@@ -33,12 +33,12 @@ class Matrix:
         new = [[0 for i in range(self.w)]]
         for k in range(self.w):
             for r in range(other.n):
-                new[0][k] = new[0][k] + (other.vals[r] * self.vals[r][k])
+                new[0][k] = new[0][k] + (other.data[r] * self.data[r][k])
         return Matrix(new)
 
     def __str__(self):
         retS = ""
-        for row in self.vals:
+        for row in self.data:
             for e in row:
                 retS += str(e) + ", "
             retS += "\n"
@@ -46,12 +46,12 @@ class Matrix:
 
     def __repr__(self):
         retS = ""
-        for row in self.vals:
+        for row in self.data:
             for e in row:
                 retS += str(e) + ", "
             retS += "\n"
         return retS
 
     def item(self):
-        if len(self.vals) == 1 and len(self.vals[0]) == 1:
-            return self.vals[0][0]
+        if len(self.data) == 1 and len(self.data[0]) == 1:
+            return self.data[0][0]

@@ -7,16 +7,16 @@ class MatrixZ2 (Matrix):
         for i in range(1, len(vals)):
             if len(vals[i-1]) != len(vals[i]):
                 raise "Matrix shape must be consistent"
-        self.vals = [[]]
+        self.data = [[]]
         if isinstance(vals, list) and isinstance(vals[0], list):
             if isinstance(vals[0][0], Z2):
-                self.vals = vals
+                self.data = vals
             else:
-                self.vals = [[Z2(v) for v in vals[row_i]] for row_i in range(len(vals))]
+                self.data = [[Z2(v) for v in vals[row_i]] for row_i in range(len(vals))]
         else:
             raise "Matrix over Z2"
-        self.h = len(self.vals)
-        self.w = len(self.vals[0])
+        self.h = len(self.data)
+        self.w = len(self.data[0])
 
     def __add__(self, other):
         new = super().__add__(self, other)
@@ -34,7 +34,7 @@ class MatrixZ2 (Matrix):
 #        for j in range(self.h):
 #            for k in range(other.w):
 #                for r in range(self.w):
-#                    new[j][k] = new[j][k] + (self.vals[j][r] * other.vals[r][k])
+#                    new[j][k] = new[j][k] + (self.data[j][r] * other.data[r][k])
 #        return MatrixZ2(new)
 
     def __rmul__(self, other):
@@ -47,5 +47,5 @@ class MatrixZ2 (Matrix):
         new = [[Z2(0) for i in range(self.w)]]
         for k in range(self.w):
             for r in range(other.n):
-                new[0][k] = new[0][k] + (other.vals[r] * self.vals[r][k])
+                new[0][k] = new[0][k] + (other.data[r] * self.data[r][k])
         return MatrixZ2(new)

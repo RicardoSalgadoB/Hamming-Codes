@@ -13,5 +13,5 @@ class MatrixZ2ToReal(Matrix):
         for j in range(other.h):
             for k in range(self.w):
                 for r in range(other.w):
-                    new[j][k] = new[j][k] + (other.vals[j][r].n * self.vals[r][k])
+                    new[j][k] = new[j][k] + (other.data[j][r].n * self.data[r][k])
         return Matrix(new)
