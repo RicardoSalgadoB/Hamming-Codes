@@ -1,19 +1,23 @@
-"""Shows the functionality of the module."""
+import numpy as np
+from random import choice
+from custom_channels import unreliable_channel
+from utils import hamm, encode
 
-from utils import hamm
-from random import randint
+unreliable = unreliable_channel()
 
-if __name__ == "__main__":
-    msg = [0 for i in range(16)]
+#x = [choice([0,1]) for i in range(10)]
+x = [1, 1, 0, 0, 1, 1, 1, 1, 1, 1]
 
-    res1 = hamm(msg)
-    print(f"This is the original message: {msg}")
-    print(f"Error detected in position: {res1}")
+print(x)
+encoded_msg = encode(x)
+sent_msg = []
+unreliable.send(encoded_msg)
+sent_msg.append(unreliable.receive())
 
-    n = randint(0, 15)
-    msg[n] = int(not msg[n])
-    res2 = hamm(msg)
-    print(f"Oh no!!! The message has been altered, but where? {msg}")
-    print(f"Error detected in index: {res2}")
+print(encoded_msg)
+#print(sent_msg[0])
+#n = hamm(sent_msg[0])
+print([1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1])
+n = hamm([1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1])
 
-    print("Oh... Thanks Hamming")
+print(n)

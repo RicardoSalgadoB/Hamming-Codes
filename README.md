@@ -1,0 +1,1 @@
+Didn't use the `galois` library because it is less performan particularly the operations with real matrices and the initialization of the galois field of length 2 itself

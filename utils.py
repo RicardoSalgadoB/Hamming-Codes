@@ -23,7 +23,7 @@ def create_helper_matrices(n: int):
         GF2: Matrix with the binary representation of 0 and each positive integer in each row.
         np.array: Matrix with [[1], ..., [l]], l is the log_2 of n
     """
-    l = int(np.log2(n))     # Max number of digits in the binary representation of indexes
+    l = np.ceil(np.log2(n)).astype(int)    # Max number of digits in the binary representation of indexes
     bin = [getBin(i, l) for i in range(n)]
     real = [[2**i] for i in range(l)]
     return GF2(bin), np.array(real)     # Gets lists into arrays
@@ -34,15 +34,41 @@ def hamm(msg):
     Args:
         msg (List[int]): A list of 0s and 1s containing the 'message' that is being transmitted.
 
-    Raises:
-        ValueError: Raised if the length of the message is not a power of 2.
-
     Returns:
-        int: index that indicates the position where the message has been altered.
+        int: index that indicates the position where the message has been altered, 0 if it hasn't.
     """
     msg = GF2([msg])        # Transform the message into a GF2 matrix
-    if msg.size not in [2**i for i in range(100)]:
-        raise ValueError("Length of message must be a power of 2")
+    #if msg.size not in [2**i for i in range(100)]:
+    #    raise ValueError("Length of message must be a power of 2")
     m1, m2 = create_helper_matrices(msg.size)
-    res_m = np.matmul(msg, m1) @ m2   # Index inside an array
+    print(m1)
+    print(m2)
+    res_m = (msg @ m1) @ m2   # Index inside an array
     return res_m.item()     # Index as a stand alone integer
+
+
+def encode(msg):
+    """Encodes a message with aprity checks in a fshion that allows for Hamming code correction
+
+    Args:
+        msg (List[int]): A list of 0s and 1s representing the message to be encoded
+
+    Returns:
+        List[int]: The encoded message with the necessary parity checks
+    """
+    parities = [0]
+    msg.insert(0, 0)
+    i = 1
+    while len(msg) > i:
+        parities.append(i)
+        msg.insert(i, 0)
+        i *= 2
+    while parities:
+        j = parities.pop()
+        msg[j] = sum([x for k, x in enumerate(msg) if j&k == j])%2
+        
+    return msg
+
+
+def encode_output(output, input):
+    i = 0
