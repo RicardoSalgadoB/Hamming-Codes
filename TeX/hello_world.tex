@@ -527,7 +527,7 @@ $$
 \end{pmatrix}
 $$
 
-Este método funciona independientemente del largo del \textit{mensaje codificado}.
+Este método funciona independientemente del largo del \textit{mensaje codificado}. Intuitivamente, la representación binaria en la matriz $B$ no ocupa estar completa (llegar hasta una potencia de 2), $C$ solo depende del número de columnas de $B$, la función $\Lambda$ no depende de nada, y, como se demostró anteriormente, la codificación necesaria para los códigos de Hamming funciona con número distintos a potencias de 2. Adicionalmente, en el repositorio de \textit{GitHub} correspondiente al proyecto se llevan a cabo pruebas con \textit{PyTest} para probar el funcionamiento con distintos largos del \textit{mensaje}. 
 
 En conclusión, la solución aquí presentada, que adapta el método de Hamming desde el software al álgebra lineal, se basa en 3 matrices:
 \begin{itemize}
@@ -544,6 +544,9 @@ $$
 se obtiene la posición donde ocurrió la alteración o $0$ de lo contrario. Con esta información, es puede corregir el error si así se desea.
 
 \section{Conclusiones}
+
+
+
 \section{Anexos}
 
 \subsection{Código en Google Colab}
@@ -551,6 +554,8 @@ se obtiene la posición donde ocurrió la alteración o $0$ de lo contrario. Con
 \subsection{Código en GitHub}
 
 \subsection{¿Cómo se acelera la múltiplicación de matrices?}
+
+
 
 \section{Bibliografía}
 \end{document}

@@ -40,15 +40,13 @@ def hamm(msg):
     msg = GF2([msg])        # Transform the message into a GF2 matrix
     #if msg.size not in [2**i for i in range(100)]:
     #    raise ValueError("Length of message must be a power of 2")
-    m1, m2 = create_helper_matrices(msg.size)
-    print(m1)
-    print(m2)
-    res_m = (msg @ m1) @ m2   # Index inside an array
-    return res_m.item()     # Index as a stand alone integer
+    bin, integers = create_helper_matrices(msg.size)
+    res_m = (msg @ bin) @ integers  # Index inside an array
+    return res_m.item()             # Index as a stand alone integer
 
 
 def encode(msg):
-    """Encodes a message with aprity checks in a fshion that allows for Hamming code correction
+    """Encodes a message with parity elements in a fshion that allows for Hamming code correction
 
     Args:
         msg (List[int]): A list of 0s and 1s representing the message to be encoded
@@ -63,11 +61,27 @@ def encode(msg):
         parities.append(i)
         msg.insert(i, 0)
         i *= 2
-    while parities:
-        j = parities.pop()
-        msg[j] = sum([x for k, x in enumerate(msg) if j&k == j])%2
-        
-    return msg
+    #while parities:
+    #    j = parities.pop()
+    #    msg[j] = sum([x for k, x in enumerate(msg) if j&k == j])%2
+    binary_activations = []
+    for i in range(len(msg)):
+        activations = []
+        if i == 0:
+            activations = [0 for j in range(len(msg))]
+        elif i in parities:
+            for j in range(len(msg)):
+                activations += [1] if i&j == i else [0]
+        else:
+            activations = [0 for j in range(len(msg))]
+            activations[i] = 1
+        binary_activations.append(activations)
+        print(activations)
+    
+    bin_act = GF2(binary_activations).transpose()
+    msg = GF2([msg])
+    
+    return (msg @ bin_act).astype(int).tolist()[0]
 
 
 def encode_output(output, input):
