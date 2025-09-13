@@ -80,7 +80,7 @@ class GF2(np.ndarray):
     @staticmethod
     def _matmul(a, b):
         """Implements normal matrxi multiplication in a GF2 matrix."""
-        # Make sue the matrices to be multiplied are represented as integers
+        # Make sure the matrices to be multiplied are represented as integers
         a_int = np.asarray(a, dtype=int)
         b_int = np.asarray(b, dtype=int)
 

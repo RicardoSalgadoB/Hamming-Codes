@@ -1,7 +1,9 @@
-from gf2 import GF2
+from typing import List
 import numpy as np
 
-def getBin(n, l):
+from gf2 import GF2
+
+def getBin(n, l) -> List[int]:
     """Gets the binary representation of a number n with l digits
 
     Returns:
@@ -28,7 +30,7 @@ def create_helper_matrices(n: int):
     real = [[2**i] for i in range(l)]
     return GF2(bin), np.array(real)     # Gets lists into arrays
 
-def hamm(msg):
+def hamm(msg) -> int:
     """Allows checking if a message has been altered according to Hamming codes.
 
     Args:
@@ -45,7 +47,7 @@ def hamm(msg):
     return res_m.item()             # Index as a stand alone integer
 
 
-def encode(msg):
+def encode(prev) -> List[int]:
     """Encodes a message with parity elements in a fshion that allows for Hamming code correction
 
     Args:
@@ -54,6 +56,7 @@ def encode(msg):
     Returns:
         List[int]: The encoded message with the necessary parity checks
     """
+    msg = prev.copy()   # Crear copia
     parities = [0]
     msg.insert(0, 0)
     i = 1
@@ -61,9 +64,7 @@ def encode(msg):
         parities.append(i)
         msg.insert(i, 0)
         i *= 2
-    #while parities:
-    #    j = parities.pop()
-    #    msg[j] = sum([x for k, x in enumerate(msg) if j&k == j])%2
+
     binary_activations = []
     for i in range(len(msg)):
         activations = []
@@ -76,7 +77,6 @@ def encode(msg):
             activations = [0 for j in range(len(msg))]
             activations[i] = 1
         binary_activations.append(activations)
-        print(activations)
     
     bin_act = GF2(binary_activations).transpose()
     msg = GF2([msg])
@@ -84,5 +84,19 @@ def encode(msg):
     return (msg @ bin_act).astype(int).tolist()[0]
 
 
-def encode_output(output, input):
+def decode(encoded_msg) -> List[int]:
+    """Decodes a message. It removes its parity bits
+
+    Args:
+        encoded_msg (List[int]): The encoded message
+
+    Returns:
+        List[int]: The decoded message, no more parity bits
+    """
+    msg = encoded_msg.copy()    # Crear copia
+    msg.pop(0)
     i = 0
+    while 2**i-i < len(msg):
+        msg.pop(2**i-i-1)
+        i += 1
+    return msg
