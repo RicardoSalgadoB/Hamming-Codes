@@ -3,8 +3,10 @@
 \usepackage[T1]{fontenc}      % Proper font encoding
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\renewcommand\qedsymbol{$\blacksquare$}
 \graphicspath{ {./Images/} }
 
 
@@ -17,15 +19,15 @@
 \newpage
 \section{Resumen}
 
-En este reporte, se presenta un método para llevar a cabo códigos de Hamming mediante herramientas de álgebra lineal, a diferencia de los métodos tradicionales que recurren a operadores lógicos. Las herramientas en cuestión son el campo de Galois \{0, 1\}, las matrices y la multiplicación de estas últimas. La primera sección de este reporte, explica el problema que se busca resolver mediante los códigos de Hamming. La segunda sección aborda las herramientas referidas anteriormente del álgebra lineal. La siguiente sección es el núcleo del reporte y explica el método que fue usado para implementar los códigos de Hamming. Posteriormente, se abordan las conclusiones de este reporte. Finalmente, se incluyen anexos que contienen una implementación del método del reporte tanto en \textit{Google Colab} como en \textit{GitHub}, además de una explicación del método usado para acelerar la multiplicación de matrices.
+En este reporte, se presenta un método para llevar a cabo códigos de Hamming mediante herramientas de álgebra lineal, a diferencia de los métodos tradicionales que recurren a operadores lógicos. Las herramientas en cuestión son el campo de Galois \{0, 1\}, las matrices y la multiplicación de estas últimas. La primera sección de este reporte, explica el problema que se busca resolver mediante los códigos de Hamming. La segunda sección aborda las herramientas del álgebra lineal referidas anteriormente. La siguiente sección es el núcleo del reporte y explica el método que fue usado para implementar los códigos de Hamming. Posteriormente, se abordan las conclusiones de este reporte. Finalmente, se incluyen anexos que contienen una implementación del método del reporte tanto en \textit{Google Colab} como en \textit{GitHub}, además de una explicación del método usado para acelerar la multiplicación de matrices.
 
 \section{Introducción al Problema}
 
-De acuerdo con el mismo Hamming (1950), el objetivo principal detrás de los códigos que hoy llevan su nombre era evitar errores singulares en lo que hoy se conoce como computadoras. En particular, este autor destaca este problema en el contexto de comunicación entre dos computadoras, se da el ejemplo de comunicaciones entre computadoras de la compañía \textit{Bell Telephone Laboratories}, donde un error fue observado en 2 a 3 de cada 8900 procesos de comunicación diarios. Aunque estos números sean pequeños, Hamming destaca el hecho que en las computadoras de la época este era un fallo catastrófico que frecuentemente causaba un alto completo del programa en ejecución.
+De acuerdo con el mismo Hamming (1950), el objetivo principal detrás de los códigos que hoy llevan su nombre era evitar errores singulares en lo que hoy se conoce como computadoras. En particular, este autor destaca este problema en el contexto de comunicación entre dos computadoras, se da el ejemplo de comunicaciones entre computadoras de la compañía \textit{Bell Telephone Laboratories}, donde un error fue observado en 2 a 3 de cada 8900 procesos de comunicación diarios. Aunque estos números sean pequeños, Hamming destaca el hecho que, en las computadoras de la época, este era un fallo catastrófico que frecuentemente causaba un alto completo del programa en ejecución.
 
-Si bien, los avances en \textit{hardware} y \textit{software} han permitido que los equipos de cómputo actuales sean más resilientes tanto a los errores individuales en el código como a los fallos en el programa. Sin embargo, la función de evitar errores sigue siendo crucial para todos los dispositivos digitales, como bien lo indica Sanderson (2013). Además, en el curso de 7 décadas de avance tecnológico, han surgido un amplia gama de otros códigos que son aún más eficientes que los códigos de Hamming a la hora de detectar errores. De estos, sin duda los más destacables son los \textit{códigos de Reed-Solomon} y los llamados \textit{códigos Turbo} (Referencia).
+Hoy en día, los avances en \textit{hardware} y \textit{software} han permitido que los equipos de cómputo actuales sean más resilientes tanto a los errores individuales en el código como a los fallos en el programa. Sin embargo, la función de evitar errores sigue siendo crucial para todos los dispositivos digitales, como bien lo indica Grant Sanderson (2020). Además, en el curso de 7 décadas de avance tecnológico, han surgido un amplia gama de otros códigos que son aún más eficientes que los códigos de Hamming a la hora de detectar errores. De estos, sin duda los más destacables son los \textit{códigos de Reed-Solomon} y los llamados \textit{códigos Turbo} (Albert et al., s.f.).
 
-Pese a esto, los códigos de Hamming presentan una buena base para ser el proyecto de una clase de con el nombre de \textit{Fundamentos del Álgebra Lineal}, aunque ciertamente no la única aplicación de esta área de las matemáticas en la corrección de errores. Si bien, Hamming solo se limita a presentar la manera de llevar a cabo su método y no a implementarlo de ninguna específica, en el curso de la historia de la computación ha sido realizarlo mediante operadores lógicos (Sanderson, 2020). Esta última implementación resulta en una lógica computacional extremadamente sencilla, si algo poco elegante matemáticamente hablando. Afortunadamente, el álgebra lineal posee dos herramientas centrales que permitirán traducir estos operadores lógicos en operaciones matemáticas bien definidas. Estas herramientas serán el tema central de la siguiente sección y son: los \textit{Campos de Galois} y la \textit{Multiplicación de Matrices}.
+Pese a esto, los códigos de Hamming presentan una buena base para ser el proyecto de una clase de con el nombre de \textit{Fundamentos del Álgebra Lineal}, aunque ciertamente no la única aplicación de esta área de las matemáticas en la corrección de errores. Si bien, Hamming solo se limita a presentar la manera de llevar a cabo su método y no a implementarlo de ninguna manera específica, en el curso de la historia de la computación, la manera estándar de implementarlos ha sido realizarlo mediante hardware u operadores lógicos (Sanderson, 2020). Esta última implementación resulta en una lógica computacional extremadamente sencilla, si algo poco elegante, matemáticamente hablando. Afortunadamente, el álgebra lineal posee dos herramientas centrales que permitirán traducir los operadores lógicos en operaciones matemáticas bien definidas. Estas herramientas serán el tema central de la siguiente sección y son: los \textit{Campos de Galois} y la \textit{Multiplicación de Matrices}.
 
 \section{Fundamentos del Álgebra Lineal}
 
@@ -33,7 +35,7 @@ Pese a esto, los códigos de Hamming presentan una buena base para ser el proyec
 
 Incluso en 1950, cuando Hamming definió su código, el lenguaje computacional era binario, como lo sigue siendo en la actualidad, llamase a cada uno de estos valores binarios \textit{bits}. Como un lector astuto podrá notar que el campo binario es distinto del campo de los reales, de los enteros y de los complejos y, por lo tanto, requiere su propia definición. Dado que este será un campo finito con solo 2 elementos (0 y 1), llamase este \textit{Campo de Galois \{0, 1\}} en honor al siempre jóven matemático francés, Évariste Galois, cuyo trabajo se relaciona profundamente con las propiedades del mismo. Una última cuestión es que, debido a que solo existen 2 elementos en este campo, es relativamente práctico llevar a cabo pruebas exhaustivas para demostrar los axiomas del mismo como se desarrolla a continuación (si bien varias propiedades se justifican mediante la herencia de los enteros).
 
-Sea $Z_2 = {0, 1}$ el campo de los números binarios con los operadores de suma y producto definidos como:
+Sea $Z_2 = \{0, 1\}$ el campo de los números binarios con los operadores de suma y producto definidos como:
 \begin{itemize}
     \item $a + b = 0$ si $(a + b)/2 = 0$ (división de números reales), $a + b = 1$ de lo contrario.
     \item $a \star b = $ si $a$ o $b$ es $0$ y $a \star b = 1$ en caso contrario.
@@ -43,17 +45,20 @@ Para demostrar que $Z_2$ es un campo es necesario demostrar que ambos operadores
 
 \begin{itemize}
     \item CONMUTATIVIDAD ADITIVA
-$$
-0 = 0 + 0 = 0 = 0 + 0
-$$$$
-1 + 0 = 1 = 0 + 1
-$$$$
-1 + 1 = 0 = 1 + 1
-$$
-
-Por lo tanto, los elementos de la adición en $Z_2$ son conmutativos.
+\begin{proof}
+    $$
+    0 = 0 + 0 = 0 = 0 + 0
+    $$$$
+    1 + 0 = 1 = 0 + 1
+    $$$$
+    1 + 1 = 0 = 1 + 1
+    $$
+    
+    Por lo tanto, los elementos de la adición en $Z_2$ son conmutativos.
+\end{proof}
 
     \item ASOCIATIVIDAD ADITIVA
+\begin{proof}
 $$
 0+(0+0) = 0+0 = (0+0) + 0
 $$$$
@@ -73,8 +78,10 @@ $$$$
 $$
 
 Por lo tanto, los elementos de la adición en $Z_2$ son asociativos.
+\end{proof}
 
     \item NEUTRO ADITIVO
+\begin{proof}
 $$
 0+0 = 0
 $$$$
@@ -82,8 +89,10 @@ $$$$
 $$
 
 Por lo tanto, $0$ es el neutro aditivo de $Z_2$.
+\end{proof}
 
     \item INVERSO ADITIVO
+\begin{proof}
 $$
 0 + 0 = 0
 $$$$
@@ -91,7 +100,9 @@ $$$$
 $$
 
 Por lo tanto, en $Z_2$ existe un elemento que hace que cada uno de sus elementos se vuelva igual al neutro aditivo ($0$).
+\end{proof}
     \item CONMUTATIVIDAD MULTIPLICATIVA
+\begin{proof}
 $$
 0 \star 0 = 0 = 0 \star 0
 $$$$
@@ -101,8 +112,11 @@ $$$$
 $$
 
 Por lo tanto, los elementos de la multiplicación en $Z_2$ son conmutativos.
+\end{proof}
 
+\newpage
     \item ASOCIATIVIDAD MULTIPLICATIVA
+\begin{proof}
 $$
 0 \star (0 \star 0) = 0 \star 0 = (0 \star 0) \star 0
 $$$$
@@ -122,8 +136,10 @@ $$$$
 $$
 
 Por lo tanto, los elementos de la multiplicación en $Z_2$ son asociativos.
+\end{proof}
 
     \item NEUTRO MULTIPLICATIVO
+\begin{proof}
 $$
 1 \star 0 = 0
 $$$$
@@ -131,8 +147,10 @@ $$$$
 $$
 
 Por lo tanto, existe un elemento (el neutro aditivo, $1$) de $Z_2$ que multiplicado por un elemento resulta en el mismo elemento.
+\end{proof}
 
     \item INVERSO MULTIPLICATIVO
+\begin{proof}
 $$
 1 \star 1 = 1
 $$
@@ -140,6 +158,7 @@ $$
 $0$ no tiene inverso multiplicativo, sin embargo $0$ es un elemento nulo en $Z_2$ de la misma manera que los es en el campo de los reales (es decir, $0 \star x = 0, \forall x \in R \lor \forall x \in Z_2$).
 
 Por lo tanto, existe un inverso multiplicativo en $Z_2$ tal que todos sus elementos no nulos multiplicados por este resulten iguales al \textit{neutro multiplicativo}.
+\end{proof}
 \end{itemize}
 
 Por último, es necesario demostrar que estos operadores se relacionan mediante los siguientes axiomas de distributividad.
@@ -147,6 +166,7 @@ Por último, es necesario demostrar que estos operadores se relacionan mediante 
 \begin{itemize}
     \item AXIOMAS DE DISTRIBUTIVIDAD
 
+\begin{proof}
 $$
 0 \star ( 0 + 0 ) = 0 \star 0 = 0 = 0 + 0 = 0 \star 0 + 0 \star 0
 $$$$
@@ -160,12 +180,13 @@ $$$$
 $$$$
 1 \star ( 1 + 1 ) = 1 \star 0 = 0 = 1 + 1 = 1 \star 1 + 1 \star 1
 $$
+\end{proof}
 
 \end{itemize}
 
-Dado que $Z_2$ con la definición anterior cumple con todos estos axiomas se concluye que es un campo.
+Dado que $Z_2$ con la definición anterior cumple con todos estos axiomas se concluye que es un campo. $\blacksquare$
 
-Al $Z_2$ ser un campo, se podrá incorporar junto con la siguiente herramienta.
+Al $Z_2$ ser un campo, se podrá utilizar junto con la siguiente herramienta.
 
 \subsubsection{Operadores lógicos en el Campo de Galois \{0, 1\}}
 
@@ -263,13 +284,13 @@ $$
 
 \section{Solución Propuesta}
 
-Las implementaciones en álgebra lineal de los códigos de Hamming explicadas a continuación fueron desarrolladas por el autor a partir de los métodos (que no son de álgebra lineal) explicados por Sanderson (2025), por lo tanto, puede que se rompan con algunas convenciones. A continuación, se llevará a cabo como implementar álgebra lineal tanto al momento de codificar un mensaje de acuerdo a los códigos de Hamming como al momento de descubrir la posición del error.
+Las implementaciones en álgebra lineal de los códigos de Hamming explicadas a continuación fueron desarrolladas por el autor a partir de los métodos (que no son de álgebra lineal) explicados por Sanderson (2020), por lo tanto, puede que se rompan con algunas convenciones. A continuación, se llevará a cabo la explicación de cómo implementar el álgebra lineal tanto al momento de codificar un mensaje de acuerdo a los códigos de Hamming como al momento de descubrir la posición del error.
 
 \subsection{Codificación por códigos de Hamming}
 
 \subsubsection{Método tradicional}
 
-Toda implementación de los \textit{Códigos de Hamming} ocupa aumentar el tamaño de la matriz inicial (a partir de ahora llamada \textit{mensaje}) para poder llevarse a cabo. Estos elementos que son agregados se conocen como \textit{bits de paridad} o generalizando un poco \textit{elementos de paridad}. Estos elementos de paridad son tales que aseguren que el número de elementos positivos ($1$) en ciertas posiciones sea par. Estás ciertas posiciones, así como la posición de los elementos de paridad, están dadas por la siguiente tabla:
+Toda implementación de los \textit{Códigos de Hamming} ocupa aumentar el tamaño de la matriz inicial (a partir de ahora llamada \textit{mensaje}) para poder llevarse a cabo. Estos elementos que son agregados se conocen como \textit{bits de paridad} o, generalizando, \textit{elementos de paridad}. Estos elementos de paridad son tales que aseguren que el número de elementos positivos ($1$) en ciertas posiciones sea par. Estás ciertas posiciones, así como la posición de los elementos de paridad, están dadas por la siguiente tabla:
 
 \begin{center}
 \begin{tabular}{ |c|c| } 
@@ -305,9 +326,9 @@ Por ejemplo la representación binario para los primeros 7 números es la siguie
     \end{tabular}
 \end{center}
 
-Por esto es que el elemento de paridad en posición 1 revisa los elementos en las posiciones 1, 3, 5 y 7, la posición 2 revisa 2, 3, 6 y 7, etc. 
+Por esto es que el elemento de paridad en la posición 1 revisa los elementos en las posiciones 1, 3, 5 y 7, la posición 2 revisa 2, 3, 6 y 7, etc. 
 
-Como se dijo al inicio el objetivo es que todas las posiciones que sean revisadas por un número tengan un número par de $1$s. Es decir, sea $S = \{ s_1, ..., s_n \}$ el conjunto de elementos en $Z_2$ que se revisen, entonces:
+Como se dijo al inicio, el objetivo es que todas las posiciones que sean revisadas por un número tengan un número par de $1$s. Es decir, sea $S = \{ s_1, ..., s_n \} | s_1, ..., s_n \in Z_2$ el conjunto de elementos que se revisen, entonces:
 $$
 0 = s_1 + ... + s_n
 $$
@@ -330,20 +351,20 @@ $$
 
 \subsubsection{Método mediante Álgebra Lineal}
 
-De la misma forma que en el método tradicional, es necesario agregar elementos extra al \textit{mensaje}, que se puede representar como una matriz sobre $Z_2$ donde cada elemento corresponde a un \textit{bit}. Estos elementos deberán ocupar las posiciones estarán en el siguiente conjunto  $ P = \{0\} + \{ 2^i | i={0, ..., \lfloor\log_2 (m)\rfloor} \} $ donde $m$ es el largo del \textit{mensaje}. La posición $0$ no tiene utilidad para este método, pero necesita estar ocupado para que esto funcione. Como en el otro, método estas posiciones pueden ser ocupadas por 0 inicialmente.
+De la misma forma que en el método tradicional, es necesario agregar elementos extra al \textit{mensaje}, que se puede representar como una matriz sobre $Z_2$ donde cada elemento corresponde a un \textit{bit}. Estos elementos deberán ocupar las posiciones estarán en el siguiente conjunto  $ P = \{0\} + \{ 2^i | i=\{0, ..., \lfloor\log_2 (m)\rfloor\} \} $ donde $m$ es el largo del \textit{mensaje}. La posición $0$ no tiene utilidad (en esta versión de los códigos de Hamming, que no detecta errores dobles), pero necesita estar ocupada para un buen funcionamiento de la implementación. Estas posiciones pueden ser ocupadas por 0 inicialmente.
 
-El método tradicional "selecciona", por así decirlo, las posiciones que tienen el bit correspondiente activado. Dentro de $Z_2$, la multiplicación se puede considerar como una especie de selección. Esto debido a las propiedades que tiene multiplicar por $0$ en $Z_2$ (y en los enteros también) de mandar cualquier número a $0$. Por lo tanto, multiplicar por $1$ se puede considerar como seleccionar un número y por $0$ como deseleccionarlo. En realidad, esta equivalencia depende del uso que se le dé a este procedimiento, pero dado que la siguiente operación va a ser una adición y que el neutro aditivo es $0$, este razonamiento es válido.
+El método tradicional "selecciona", por así decirlo, las posiciones que tienen el \textit{bit} correspondiente activado. Dentro de $Z_2$, la multiplicación se puede considerar como una especie de selección. Esto debido a las propiedades que tiene multiplicar por $0$ en $Z_2$ (y en los enteros también) de mandar cualquier número a $0$. Por lo tanto, multiplicar por $1$ se puede considerar como "seleccionar" un número y multiplicar por $0$ como "deseleccionarlo". En realidad, esta equivalencia depende del uso que se le dé a este procedimiento, pero dado que la siguiente operación va a ser una adición y que el neutro aditivo es $0$, este razonamiento es válido.
 
-Una vez ya se han seleccionado todos las posiciones correspondientes a cada elemento de paridad (mediante multiplicación), los elementos en estas posiciones se deben sumar (adición de $Z_2$). Sea el resultado de está suma $s$ y $p$ el valor del elemento de paridad,
+Una vez ya se han seleccionado todos las posiciones correspondientes a cada elemento de paridad (mediante multiplicación), los elementos en estas posiciones se deben sumar (adición de $Z_2$ o \textit{XOR} en operadores binarios). Sea el resultado de está suma $s$ y $p$ el valor del elemento de paridad necesario para que haya un número par de $1$s,
 \begin{itemize}
-    \item Si $s = 0$, $p = 0$ es necesario (para asegurar un número par de $1$s)
+    \item Si $s = 0$, $p = 0$ es necesario.
     \item Si $s = 1$, $p = 1$ es necesario.
 \end{itemize}
 Por lo tanto, $s = p$ para todos los casos. 
 
-Lo descrito anteriormente no es más que una multiplicación de matrices. La mayor dificultad consiste en generar una matriz que "seleccione" las posiciones indicadas. Esta matriz debe de multiplicar por $1$ el valor de paridad actual y todos los otros elementos en los que está activo el bit, dejando este valor en su posición correspondiente. Cuando la posición del resultado no corresponde a un índice de paridad, el único valor que se debe de multiplicar por $1$ es el valor actual.
+En conjunto, el procedimiento descrito anteriormente no es más que una multiplicación de matrices, ya que esta consiste de multiplicaciones y de sumas. Ahora, la mayor dificultad consiste en generar una matriz que "seleccione" las posiciones indicadas.
 
-Los requerimientos anteriores se cumplen con la matriz cuadrada $D\ n \times n$, donde $n$ es el largo del mensaje, y sea que $D$ es generada por una función $\Phi$ a partir de la matriz del mensaje (con $0$s como elementos de paridad). La primera columna de $D$ consiste en $0$s (opcionalmente, se puede que el elemento en la primer posición de la matriz resultante de multiplicar el mensaje con $D$ sea la suma en $Z_2$ de todos los elementos de la matriz para que esta sea capaz de identificar 2 errores en el mensaje, pero esto va más allá de los límites de la actividad). Las columnas cuyos números corresponden a las posiciones de los índices de paridad contienen $1$s en los lugares en los que está activado el bit correspondiente. Las columnas con valores que no son elementos de paridad tienen un único $1$ en el renglón que corresponde a su número de columna.
+Las selecciones requeridas se cumplen con la matriz cuadrada $D\ n \times n$, donde $n$ es el largo del mensaje, y sea que $D$ es generada por una función $\Phi$ a partir del \textit{mensaje} (con $0$s como elementos de paridad). La primera columna de $D$ consiste en $0$s (opcionalmente, se puede hacer que el elemento en la primer posición de la matriz resultante de multiplicar el mensaje con $D$ sea la suma en $Z_2$ de todos los elementos de la matriz para que esta sea capaz de identificar 2 errores en el mensaje, pero esto va más allá de los límites de este reporte). Las columnas cuyos números corresponden a las posiciones de los índices de paridad contienen $1$s en los lugares en los que está activado el bit correspondiente. Las columnas con valores que no son elementos de paridad tienen un único $1$ en el renglón que corresponde a su número de columna.
 
 Por ejemplo, retomando la matriz $A$, sea $A_{ext}$ la matriz con las posiciones de paridad agregadas como $0$,
 
@@ -367,12 +388,12 @@ $$$$
 \end{pmatrix}
 $$
 
-El resultado es el mismo que anteriormente, por lo que el método funciona (en el código, se llevan a cabo pruebas con \textit{PyTest} que comprueban el funcionamiento de este método con otras matrices)
+El resultado es el mismo que se obtuvo con el método tradicional, por lo que se concluye que este método mediante el álgebra lineal funciona (en el código, se llevan a cabo pruebas con \textit{PyTest} que comprueban el funcionamiento de este método con otras matrices distintas).
 
 Esté método también funciona para mensajes codificados cuyo largo no sea una potencia de $2$. Por ejemplo, sea $B_{ext}$ una matrix $1 \times 6$ que representa el mensaje codificado con los elementos de paridad como $0$s,
 
 $$
-B' = B_{ext} \Phi(A_{ext}) = \begin{pmatrix}
+B' = B_{ext} \Phi(B_{ext}) = \begin{pmatrix}
     0 & 0 & 0 & 1 & 0 & 1
 \end{pmatrix}
 \begin{pmatrix}
@@ -389,7 +410,7 @@ $$$$
 \end{pmatrix}
 $$
 
-El lector puede comprobar que este resultado es válido con respecto al método tradicional
+El lector puede comprobar que este resultado es válido con respecto al método tradicional.
 
 \subsection{Identificación de errores en códigos de Hamming}
 
@@ -417,7 +438,7 @@ Debido a que la operación \textit{XOR}, trabaja bit por bit (o, elemento por po
 
 Donde $\oplus$ denota \texttt{reduce(op.xor, ...)}.
 
-Por supuesto el resultado actual es $0$ (en binario), pero si se cambia el valor de la columna 6, el resultado sería
+Por supuesto el resultado actual es la representación binario $0$ (con 3 bits), pero si se cambia a $1$ el valor de la columna 6, por ejemplo, el resultado sería
 
 \begin{center}
 \begin{tabular}{c c c c}
@@ -429,10 +450,9 @@ Por supuesto el resultado actual es $0$ (en binario), pero si se cambia el valor
     & 1 & 1 & 0
 \end{tabular}
 \end{center}
+que es exactamente la representación binaria de 6. Como dije es una implementación bastante sencilla.
 
-El resultado es exactamente la representación binaria de 6. Como dije es una implementación bastante sencilla.
-
-Para traducir este método al lenguaje del álgebra lineal, es necesario preguntarse sobre la existencia de una herramienta dentro que siga estos pasos. Siendo "estos pasos": seleccionar las posiciones que tengan $1$ y agregar los resultados de sus posiciones mediante \textit{XOR}.
+Para traducir este método al lenguaje del álgebra lineal, es necesario preguntarse sobre la existencia de una herramienta dentro de esta área de las matemáticas que siga estos pasos. Siendo "estos pasos": seleccionar las posiciones que tengan $1$ y agregar los resultados de sus posiciones mediante \textit{XOR}.
 
 \subsubsection{Mediante Álgebra Lineal}
 
@@ -446,7 +466,7 @@ A = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-Entonces, sea $B$ una matriz en $Z_2$ con las 4 posiciones de $A$ representadas en binario por los elementos de cada renglón:
+Entonces, sea $B$ una matriz $4 \times \lceil\log_2{4}\rceil$ ($4 \times 2$) en $Z_2$ con las 4 posiciones de $A$ representadas en binario por los elementos de cada renglón:
 
 $$
 B = \begin{pmatrix}
@@ -497,13 +517,13 @@ $$
 $$
 Siendo este resultado la representación binaria de $2$ que es la posición donde ocurrió la alteración.
 
-Para evitar este ejercicio mental de interpretar la representación binaria, el resultado anterior se puede multiplicar por otra matriz que otorgue un número en decimal, solo habría que asegurar que cada elemento binario se multiplique con el número decimal que representa para después sumarse. Una complicación de esta operación es que $AB$ es una matriz sobre $Z_2$ que se estaría multiplicando con una matriz sobre $Z$. Para aliviar este problema es necesario pasar $AB$ por una función (llámese $\Lambda$) que mapee cada uno de sus elementos a $Z$:
+Para evitar este ejercicio mental de interpretar la representación binaria, el resultado anterior se puede multiplicar por otra matriz que otorgue un número en representación decimal, solo habría que asegurar que cada elemento binario se multiplique con el número decimal que representa para después sumarse. Una complicación de esta operación es que $AB$ es una matriz sobre $Z_2$ que se estaría multiplicando con una matriz sobre $Z$. Para aliviar este problema es necesario pasar $AB$ por una función (llámese $\Lambda$) que mapee cada uno de sus elementos a $Z$:
 \begin{itemize}
     \item $0 \in Z_2$ se convertiría en $0 \in Z$
     \item $1 \in Z_2$ se convertiría en $1 \in Z$
 \end{itemize}
 
-De esta manera, sea $C$ una matriz vertical $2 \times 1$ (claro que esto varía dependiendo del número de bits necesarios para representar el elemento en la última columna de A) donde $A_{i1} = 2^(i-1)$, entonces
+De esta manera, sea $C$ una matriz vertical $2 \times 1$ (claro que esto varía dependiendo del número de bits necesarios para representar el elemento en la última columna de A) donde $C_{i1} = 2^{i-1}$, entonces
 
 $$
 \Lambda(AB)C = \begin{pmatrix}
@@ -531,7 +551,7 @@ $$
 \end{pmatrix}
 $$
 
-Este método funciona independientemente del largo del \textit{mensaje codificado}. Intuitivamente, la representación binaria en la matriz $B$ no ocupa estar completa (llegar hasta una potencia de 2), $C$ sólo depende del número de columnas de $B$, la función $\Lambda$ no depende de nada, y, como se demostró anteriormente, la codificación necesaria para los códigos de Hamming funciona con número distintos a potencias de 2. Adicionalmente, en el repositorio de \textit{GitHub} correspondiente al proyecto se llevan a cabo pruebas con \textit{PyTest} para probar el funcionamiento con distintos largos del \textit{mensaje}. 
+Este método funciona independientemente del largo del \textit{mensaje codificado}. Intuitivamente, la representación binaria en la matriz $B$ no ocupa estar completa (es decir, llegar hasta una potencia de 2), $C$ sólo depende del número de columnas de $B$, la función $\Lambda$ no depende de nada, y, como se demostró anteriormente, la codificación necesaria para los códigos de Hamming funciona con número distintos a potencias de 2. Adicionalmente, en el repositorio de \textit{GitHub} correspondiente al proyecto se llevan a cabo pruebas con \textit{PyTest} para probar el funcionamiento con distintos largos del \textit{mensaje}. 
 
 En conclusión, la solución aquí presentada, que adapta el método de Hamming desde el software al álgebra lineal, se basa en 3 matrices:
 \begin{itemize}
@@ -549,7 +569,7 @@ se obtiene la posición donde ocurrió la alteración o $0$ de lo contrario. Con
 
 \section{Conclusiones}
 
-En este reporte, se ha descrito una implementación de los códigos de Hamming mediante las herramientas del Álgebra Lineal. Esta implementación fue desarrollada a partir de las implementaciones más comunes de los códigos de Hamming mediante operador lógico \textit{XOR}. Las herramientas del Álgebra Lineal que se emplean en la traducción de estos métodos incluyen \textit{Campos de Galois} y \textit{multiplicación de matrices}. Como se puede ver en el desarrollo, las propiedades de estas 2 herramientas combinadas, resultan en recrear las propiedades de \textit{XOR}. Si bien esta implementación tiene un mayor grado de elegancia matemática, el rendimiento de la implementación tradicional sigue siendo mucho mejor que está aún con todas las posibles optimizaciones facilitadas por \textit{Numpy}.
+En este reporte, se ha descrito una implementación de los códigos de Hamming mediante las herramientas del Álgebra Lineal. Esta implementación fue desarrollada a partir de las implementaciones más comunes de los códigos de Hamming mediante el operador lógico \textit{XOR}. Las herramientas del Álgebra Lineal que se emplean en la traducción de estos métodos incluyen los \textit{campos de Galois} y \textit{multiplicación de matrices}. Como se puede ver en el desarrollo, las propiedades de estas 2 herramientas combinadas, resultan en recrear las propiedades de \textit{XOR}. Si bien esta implementación tiene un mayor grado de elegancia matemática, el rendimiento computacional de la implementación tradicional sigue siendo mucho mejor que está aún con todas las posibles optimizaciones facilitadas por \textit{Numpy}.
 
 Se ha de concluir que este proyecto ha sido una buena excusa para poner en práctica los \textit{Fundamentos de Álgebra Lineal} vistos durante el curso. Así mismo, pese a que el curso carezca del enfoque en programación que algunos apreciarían, este proyecto fue una buena oportunidad para revisar la implementación de las diversas ideas matemáticas vistas en el curso dentro del ámbito de la programación. Esto no incluye únicamente a la multiplicación de matrices, sino también a los campos, ya que las propiedades de estos terminan por reducirse a la manera en la que se implementan los métodos de una clase. 
 
@@ -557,7 +577,7 @@ Se ha de concluir que este proyecto ha sido una buena excusa para poner en prác
 
 \subsection{Código en Google Colab}
 
-Se le recomienda encarecidamente al lector, que no utilice la librería mediante \textit{Google Colab}, sino mediante \textit{GitHub}. Pese a esta recomendación, la siguiente es un hipervínculo que conduce a un \textit{Google Colab}, desde donde se puede interactuar con la implementación del código de Hamming: \href{https://colab.research.google.com/drive/1xWJWQLNB1Z9q0s-1r4mwRDcQOFA0c7Zu?usp=sharing}{https://colab.research.google}\\\href{https://colab.research.google.com/drive/1xWJWQLNB1Z9q0s-1r4mwRDcQOFA0c7Zu?usp=sharing}{.com/drive/1xWJWQLNB1Z9q0s-1r4mwRDcQOFA0c7Zu?usp=sharing}
+Se le recomienda encarecidamente al lector, que no utilice la librería mediante \textit{Google Colab}, sino mediante \textit{GitHub}. Pese a esta recomendación, lo siguiente es un hipervínculo que conduce a un \textit{Google Colab}, desde donde se puede interactuar con la implementación del código de Hamming: \href{https://colab.research.google.com/drive/1xWJWQLNB1Z9q0s-1r4mwRDcQOFA0c7Zu?usp=sharing}{https://colab.research.google}\\\href{https://colab.research.google.com/drive/1xWJWQLNB1Z9q0s-1r4mwRDcQOFA0c7Zu?usp=sharing}{.com/drive/1xWJWQLNB1Z9q0s-1r4mwRDcQOFA0c7Zu?usp=sharing}
 
 \subsection{Código en GitHub}
 
@@ -610,7 +630,7 @@ Lo mismo sucede con $B$, pero a esta se le agrega una nueva dimensión, sin camb
     \includegraphics{2.pdf}
 \end{center}
 
-Después, está forma se transpone internamente resultando en que $B_{ext}$ sea:
+Después, esta forma se transpone internamente resultando en que $B_{ext}$ sea:
 
 \begin{center}
     \includegraphics{3.pdf}
@@ -643,7 +663,7 @@ $$
 \end{pmatrix}
 $$
 
-Este método tiene un mejor rendimiento que la suma iterativa de los elementos de renglones y columnas. No reduce el número de operaciones necesarias para computar la matriz resultante (como el algoritmo de \textit{Strassen} o el algoritmo de \textit{AlphaEvolve}), pero al utilizar diversas funciones internas de numpy como la multiplicación normal (por \textit{*}) de 2 matrices y \texttt{np.reduce} se logra un mejor rendimiento.
+Este método tiene un mejor rendimiento que la suma iterativa de los elementos de renglones y columnas. No reduce el número de operaciones necesarias para computar la matriz resultante (como el algoritmo de \textit{Strassen} o el algoritmo de \textit{AlphaEvolve}), pero al utilizar diversas funciones internas de \textit{Numpy}, como la multiplicación normal (por \textit{*}) de 2 matrices y \texttt{np.reduce}, se logra un mejor rendimiento.
 
 \section{Bibliografía}
 
