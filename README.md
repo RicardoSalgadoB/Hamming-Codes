@@ -1,4 +1,4 @@
-# Códigos de Hamming en Z_2
+# Códigos de Hamming en $Z_2$
 
 ## Resumen
 
