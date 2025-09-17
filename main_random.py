@@ -3,40 +3,40 @@ from custom_channels import unreliable_channel
 from utils import hamm, encode, decode
 
 def main(show: bool = False):
-    unreliable = unreliable_channel()                           # Declarar objeto para alterar los mensajes
-    terminators = ["Arnold Schwarzenegger", "Robert Patrick"]   # Nombres de los actores de los terminators que corregiran los mensajes
-    msg = [choice([0,1]) for i in range(26)]                    # Crear mensaje aleatoriamente
+    unreliable = unreliable_channel()                           # Declare object to simulate message transmission
+    terminators = ["Arnold Schwarzenegger", "Robert Patrick"]   # Names of the terminators that can be sent to the past
+    msg = [choice([0,1]) for i in range(26)]                    # Create message randomly
 
-    # Opcionalmente, mostrar mensaje original
+    # Optionally, show orignal message
     if show:
-        print(f'[Mensaje Original: {msg}]\n')
+        print(f'[Original: {msg}]\n')
         
-    # Codificar mensaje y opcionalmente mostrarlo
+    # Encode message & optionally print it
     encoded_msg = encode(msg)
     if show:
-        print(f'[Mensaje codificado: {encoded_msg}]\n')
+        print(f'[Encoded: {encoded_msg}]\n')
         
-    # Enviar mensaje donde puede ser alterado. Opcionalmente, imprimir mensaje recibido
+    # Send message, it can be altered. Optionally, show altered message
     unreliable.send(encoded_msg)
     received_msg = unreliable.receive()
     if show:
-        print(f'[Mensaje recibido: {received_msg}]\n')
+        print(f'[Received: {received_msg}]\n')
         
-    # Utilizar los códigos de hamming para identificar y corregir el error si lo hay. Opcionalmente, mostrar corrección
+    # Use Hamming codes to detect and correct the message. Optionally, show the corrected message
     n = hamm(received_msg)
     if n == 0:
-        print("Mensaje recibido perfectamente\n")
+        print("Message received perfectly\n")
     else:
-        print(f"Oh no... hay un error el posicion {n} del mensaje codificado. Enviando a {choice(terminators)} al pasado para corregirlo.\n")
-        received_msg[n] = (received_msg[n]+1)%2     # Corregir error :)
-        print("Mensaje corregido. Gracias por confiar en Cyberdine Systems AC de CV (made in Apodaca)\n")
+        print(f"Oh no... there's an error at positon {n}. Sending {choice(terminators)} to the past to fix it.\n")
+        received_msg[n] = (received_msg[n]+1)%2     # Correct Error :)
+        print("Error Corrected. Thank you for trusting Cyberdine Systems AC de CV (made in Apodaca)\n")
     if show:
-        print(f"[Mensaje Corregido: {received_msg}]\n")
+        print(f"[Corrected: {received_msg}]\n")
         
-    # Descodificar el mensaje a su estado natural y opcionalmente mostrarlo
+    # Decodify the message, removing parity bits &, optionally, show it
     decoded_msg = decode(encoded_msg)
     if show:
-        print(f"[Mensaje decodificado: {decoded_msg}]\n")
+        print(f"[Decodified: {decoded_msg}]\n")
     
     
 if __name__ == '__main__':

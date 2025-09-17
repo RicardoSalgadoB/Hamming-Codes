@@ -2,7 +2,7 @@ from random import choice
 from custom_channels import unreliable_channel
 from utils import hamm, encode, decode
 
-# Declarar los datos que son enviados
+# Declare the data that is going to be sent
 str_input="""10110101101001101100101001
 01001011100010011010011101
 11100101001100111100110101
@@ -53,7 +53,7 @@ str_input="""10110101101001101100101001
 00111100001111000011110000
 10101111000010101111000010"""
 
-# Declarar los datos que son recibidos
+# Declare the data that are going to be received
 str_output="""10010101101001101100101001
 00001011100010011010011101
 10100101001100111100110101
@@ -106,12 +106,12 @@ str_output="""10010101101001101100101001
 
 
 def parse(str_msg):
-    """ Transfoma los mensajes de entrada y de salida (stings) en una lista de listas con cada elemento como 0 o 1. """
+    """ Transforms input and output messages (strings) into a list of lists with each element as either 0 or 1. """
     return [[int(b) for b in x] for x in str_msg.split('\n')]
 
 
 def add_parities(encoded, not_encoded):
-    """ Agrega bits de pariedad a una lista no codificada que no los tiene a parir de sus valores en una lsita codificada. """
+    """ Adds parity bits to an unencoded list that does not have them based on their values ​​in an encoded list. """
     not_encoded.insert(0, encoded[0])
     i = 0
     while len(encoded) > len(not_encoded):
@@ -120,46 +120,46 @@ def add_parities(encoded, not_encoded):
         
 
 def main(show: bool = False):
-    # Mensajes enviados y recibidos formateados apropiadamente
+    # Messages sent and received formated appropeately
     input = parse(str_input)
     output = parse(str_output)
     
-    unreliable = unreliable_channel()                           # Declarar objeto para alterar los mensajes
-    terminators = ["Arnold Schwarzenegger", "Robert Patrick"]   # Nombres de los actores de los terminators que corregiran los mensajes
+    unreliable = unreliable_channel()                           # Declare objet to simulate sending messages
+    terminators = ["Arnold Schwarzenegger", "Robert Patrick"]   # Names of the terminators that can be sent to the past
     
-    for i in range(len(input)):         # Para cada Mensaje ...
+    for i in range(len(input)):         # For each message...
         print(f"\nMENSAJE {i+1}")
         
-        # Opcionalmente, imprimir mensaje original
+        # Optionally, print the orignal message
         if show:
-            print(f'[Mensaje Original: {input[i]}]\n')
+            print(f'[Original: {input[i]}]\n')
             
-        # Codificar mensaje con bits de pariedad y, opcionalmente, mostrarlo
+        # Encode the message &, optinally, show it
         encoded_msg = encode(input[i])
         if show:
-            print(f'[Mensaje codificado: {encoded_msg}]\n')
+            print(f'[Encoded: {encoded_msg}]\n')
         
-        # Obtener recivido (como copia), añadirle bits de pariedad y, opcionalmente, mostrarlo
+        # Get received messages (as copy), add parity bits and, optionally, show it
         received_msg = output[i].copy()
         add_parities(encoded_msg, received_msg)
         if show:
-            print(f'[Mensaje recibido: {received_msg}]\n')
+            print(f'[Received: {received_msg}]\n')
             
-        # Utilizar códigos de Hamming para corregir el error y, opcionalmente, mostrar el mensaje corregido
+        # Use hamming codes to correct the error and, optionally, show the corrected message
         n = hamm(received_msg)
         if n == 0:
-            print("Mensaje recibido perfectamente\n")
+            print("Message received perfectl\n")
         else:
-            print(f"Oh no... hay un error el posicion {n} del mensaje codificado. Enviando a {choice(terminators)} al pasado para corregirlo.\n")
-            received_msg[n] = (received_msg[n]+1)%2
-            print("Mensaje corregido. Gracias por confiar en Cyberdine Systems AC de CV (made in Apodaca)\n")
+            print(f"Oh no... there's an error at positon {n}. Sending {choice(terminators)} to the past to fix it.\n")
+            received_msg[n] = (received_msg[n]+1)%2     # Correct Error :)
+            print("Error Corrected. Thank you for trusting Cyberdine Systems AC de CV (made in Apodaca)\n")
         if show:
-            print(f"[Mensaje Corregido: {received_msg}]\n")
+            print(f"[Corrected: {received_msg}]\n")
             
-        # Quitar bits de pariedad al mensaje y, opcionalmente, mostrarlo
+        # Remove parity bits from messate adn, optionally, show it
         decoded_msg = decode(encoded_msg)
         if show:
-            print(f"[Mensaje decodificado: {decoded_msg}]\n")
+            print(f"[Decoded: {decoded_msg}]\n")
     
     
 if __name__ == '__main__':

@@ -1,3 +1,59 @@
+# Hamming codes on GF2
+
+## Summary
+
+This repository includes the final project for the *Fundamentals of Linear Algebra* course at *Tecnológico de Monterrey*. The project consists of the implementation of Hamming codes using linear algebra resources (*Galois fields* and *matrix multiplication*). I truly feel that I've become familiar with how Hamming codes work. I'm most proud of the fact that I didn't need any references that explicitly discussed Hamming codes in linear algebra for this project; I simply reverse-engineered the logical operators implementation of them.
+
+## Repository Structure
+
+* `gf2.py` contains a class that inherits from `numpy.array` to implement the Galois field $Z_2 = \{0, 1 \}$
+* `custom_channels.py` contains a predefined class for sending and altering messages. This class was provided by the course instructor.
+* `utils.py` contains a series of functions that encode and decode an array using Hamming codes. It also includes a function that identifies the position where the error occurred.
+* `test.py` is a file designed to perform tests using *PyTest*; see below for details on how to do this.
+* `main_fixed_input.py` implements Hamming codes for sent and received messages. These messages are provided by the course instructor.
+* `main_random.py` implements Hamming codes for random messages that are generated within the code.
+* The `TeX` folder contains the `.tex` file used to generate the `.pdf` report, also included. A small demonstration of my *LaTeX* skills.
+
+## Usage
+
+Simply create a virtual environment with *venv*
+
+```sh
+python -m venv .venv
+```
+
+or with *conda*
+
+```sh
+conda create --name HammCodes
+```
+
+and install the project libraries.
+
+```sh
+pip install -r requirements.txt
+```
+
+From this point, you are free to run any files you want. For example, to check that the library is working properly, you can run pytest:
+
+```sh
+python -m pytest test.py
+```
+
+Although my personal recommendation is to play with `main_fixed_input.py` or `main_random.py`, passing the *show* parameter to true in each of them.
+
+```sh
+python main_fixed_input.py
+```
+
+```sh
+python main_random.py
+```
+
+## Miscellaneous
+
+There is a library called `galois` in *Python* that already implements arrays in $Z_2$ inheriting from *Numpy*. However, its performance is terrible; creating the field on $Z_2$ is comically slow. My implementation is faster because it only focuses on $Z_2$ and not other Galois fields.
+
 # Códigos de Hamming en $Z_2$
 
 ## Resumen
@@ -53,7 +109,3 @@ python main_random.py
 ## Misceláneo
 
 Existe una librería llamada `galois` en *Python* que ya implementa matrices en $Z_2$ heredando de *Numpy*. Sin embargo, su rendimiento es pésimo, la creación del campo sobre $Z_2$ es cómicamente lenta. Mi implementación es más rápida ya que solo se enfoca en $Z_2$ y no en otros campos de Galois.
-
-# Hamming codes on GF2
-
-... (pending) ... (it'll be worth the wait, my english readers... if any)

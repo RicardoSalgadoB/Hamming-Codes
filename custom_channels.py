@@ -9,14 +9,14 @@ class unreliable_channel:
 
     def send(self, msg):
         funny_messages = [
-            "Enviando el Mensaje...",
-            "Luchando con los aliens por la integridad del mensaje...",
-            "Casi ahogándose en un río porque pisó mal...",
-            "Conociendo al amor de su vida camino a entregar el mensaje..."
+            "Sending the message...",
+            "Fighting aliens for the integrity of the message...",
+            "Almost drowning in a river because of a misstep...",
+            "Meeting the love of their life on the way to deliver the message..."
         ]
 
         if self.warnings:
-            print("\nIniciando Transmisión Ultracifrada...\n")
+            print("\nStarting Ultra-Encrypted Transmission...\n")
     
         total_time = 1 #15
         bar_length = total_time
@@ -34,7 +34,7 @@ class unreliable_channel:
             time.sleep(interval)
 
         if self.warnings:
-            print("\n\nMensaje enviado, gracias por confiar en Cyberdine Systems AC de CV (made in Apodaca)\n")
+            print("\n\nMessage sent, thank you for trusting Cyberdine Systems AC de CV (made in Apodaca)\n")
         self.sended = [int(x) for x in msg]
     
     def receive(self):
